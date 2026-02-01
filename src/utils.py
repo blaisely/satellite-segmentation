@@ -2,26 +2,37 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-# helper function for data visualization
 class Utils:
     @staticmethod
-    def visualize(title: str, save: bool = False, **images):
-        """
-        Plot images in one row
-        """
+    def visualize(title: str, save: bool = False, class_rgb_values=None, class_names=None, **images):
         n_images = len(images)
-        plt.figure(figsize=(12,8))
+        fig, axes = plt.subplots(1, n_images, figsize=(4*n_images, 6))
+
+        if n_images == 1:
+            axes = [axes]
+
         for idx, (name, image) in enumerate(images.items()):
-            plt.subplot(1, n_images, idx + 1)
-            plt.xticks([]); 
-            plt.yticks([])
-            # get title from the parameter names
-            plt.title(name.replace('_',' ').title(), fontsize=20)
-            plt.imshow(image)
-        plt.suptitle(title)
+            axes[idx].imshow(image)
+            axes[idx].set_title(name.replace('_', ' ').title(), fontsize=18)
+            axes[idx].axis('off')
+
+        fig.suptitle(title, fontsize=22)
+
+        if class_rgb_values is not None and class_names is not None:
+            legend_patches = Utils.create_segmentation_legend(class_rgb_values, class_names)
+            fig.legend(
+                handles=legend_patches,
+                loc='lower center',
+                ncol=min(len(class_names), 5),
+                fontsize=10,
+                frameon=False
+            )
+
+        plt.tight_layout()
         plt.show()
+
         if save:
-            plt.savefig(name+".png")
+            plt.savefig(f"{title}.png", dpi=300, bbox_inches='tight')
 
     @staticmethod
     def create_segmentation_legend(class_rgb_values, class_names):

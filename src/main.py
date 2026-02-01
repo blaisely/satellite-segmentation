@@ -53,10 +53,10 @@ def benchmark():
     _, valid_loader, test_loader = create_dataloaders(train_split, val_split, test_split, preprocessing_fn, rgb_values)
     params = define_parameters(model, n_classes = 7, initial_lr = 1e-4)
     model.load(PATH)
-    f1, iou, loss = model.val_benchmark(valid_loader, rgb_values, class_names, params.loss, DIR+"\\predictions.png", n_images = 3)
+    f1, iou, loss = model.val_benchmark(valid_loader, rgb_values, class_names, params.loss, DIR+"\\predictions2.png", n_images = 3)
     print(f"Valid set Dice loss: {loss} | Valid set F1: {f1} | Valid set iou: {iou}")
 
-    model.predict(test_loader, rgb_values, n_images = 2)
+    # model.predict(test_loader, rgb_values, class_names, n_images = 2)
                      
 def visualize_training(train_logs, val_logs, save_name):
     train_loss = train_logs["loss"][0]
@@ -104,11 +104,8 @@ def get_class_info(csv_path: str) -> tuple[np.array, ...]:
     class_dict.columns = class_dict.columns.str.strip()
     class_dict['name'] = class_dict['name'].str.strip()
     
-    target_classes = ['urban_land', 'agriculture_land', 'rangeland', 'forest_land', 'water', 'barren_land', 'unknown']
-    selected_df = class_dict[class_dict['name'].isin(target_classes)]
-    
-    class_names = selected_df['name'].tolist()
-    class_rgb_values = selected_df[['r', 'g', 'b']].values.astype(int).tolist()
+    class_names = class_dict['name'].tolist()
+    class_rgb_values = class_dict[['r', 'g', 'b']].values.astype(int).tolist()
     
     print('Class Names:', class_names)
     print('Class RGB values:', class_rgb_values)

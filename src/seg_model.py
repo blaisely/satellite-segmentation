@@ -241,7 +241,8 @@ class SegmentationModel:
 
         return running_f1 / len(val_loader), running_iou / len(val_loader), running_loss / len(val_loader)
     
-    def predict(self, test_loader: DataLoader, class_rgb_values: list[float], visualize: bool = True, n_images: int = 5) -> None:
+    def predict(self, test_loader: DataLoader, class_rgb_values: list[float],
+                 class_names: list[str], visualize: bool = True, n_images: int = 5) -> None:
         self._model.eval()
         self._model.to(self.device)
         images_shown = 0
@@ -261,7 +262,9 @@ class SegmentationModel:
                     preds = preds[i]
                     Utils.visualize(
                         title = "Prediction",
-                        original_image = image,
+                        class_rgb_values = class_rgb_values,
+                        class_names = class_names,
+                        Original_image = image,
                         Prediction = Utils.colour_code_segmentation(preds, class_rgb_values),
                         )
                     images_shown += 1
